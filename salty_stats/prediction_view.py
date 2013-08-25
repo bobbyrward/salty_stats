@@ -46,6 +46,11 @@ class PredictionView(QtGui.QTextEdit):
         else:
             lines.append("Estimate: Try betting upset")
 
+        if messages['warnings']:
+            lines.append('')
+            lines.append('WARNINGS')
+            lines.extend(''.join(('\t', x)) for x in messages['warnings'])
+
         lines.append('')
         lines.append('Favoring Player 1:')
         lines.extend(''.join(('\t', x)) for x in messages['favorp1'])
