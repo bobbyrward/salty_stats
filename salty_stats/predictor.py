@@ -95,6 +95,6 @@ def predict_winner(session, player1, player2):
         messages['favorp2'].append('{} has a higher rating than {}'.format(player2.name, player1.name))
         player2_bet_rating += 3
     else:
-        messages['similar'].append('{} and {} have a similar rating'.format(player1.name, player2.name))
+        messages['warnings'].append('{} and {} have a similar rating'.format(player1.name, player2.name))
 
     return messages, player1_bet_rating, player2_bet_rating
