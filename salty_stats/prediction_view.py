@@ -59,9 +59,6 @@ class PredictionView(QtGui.QTextEdit):
         lines.append('')
         lines.append('Favoring Player 2:')
         lines.extend(''.join(('\t', x)) for x in messages['favorp2'])
-        lines.append('')
-        lines.append('Similarities:')
-        lines.extend(''.join(('\t', x)) for x in messages['similar'])
 
         self.setPlainText('\n'.join(lines))
 
