@@ -18,11 +18,18 @@ from salty_stats.app import Application
 #TODO: Fix the tab order
 #TODO: Select all text on edit box mouse focus
 
+#TODO: Fix this
+# Traceback (most recent call last):
+#   File "salty_stats/crawler_dialog.py", line 51, in on_crawl_complete
+#     self.parent.next()
+# AttributeError: 'builtin_function_or_method' object has no attribute 'next'
+
 #Predictions
 #TODO: Take into account current win streaks
 #TODO: Take current loss streak into account.
 #TODO: Have they beaten anyone around that rating before?
 #TODO: Try reducing initial rating?
+#TODO: Take undefeated into account
 
 
 def main():
