@@ -1,5 +1,6 @@
 import logging
 
+from PySide import QtCore
 from PySide import QtGui
 
 from salty_stats.predictor import predict_winner
@@ -11,6 +12,7 @@ class PredictionView(QtGui.QTextEdit):
     def __init__(self, parent):
         super(PredictionView, self).__init__(parent)
         self.setReadOnly(True)
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
 
         self.player1 = None
         self.player2 = None

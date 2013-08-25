@@ -1,5 +1,6 @@
 import logging
 
+from PySide import QtCore
 from PySide import QtGui
 
 
@@ -36,3 +37,4 @@ class MatchHistoryTableView(QtGui.QTableView):
         self.setModel(model)
         self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.setItemDelegate(MatchHistoryItemDelegate(self))
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
