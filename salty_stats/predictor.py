@@ -19,6 +19,7 @@ def predict_winner(session, player1, player2):
     messages = {
         'favorp1': [],
         'favorp2': [],
+        'warnings': [],
         'similar': [],
     }
 
@@ -56,6 +57,9 @@ def predict_winner(session, player1, player2):
             ))
             player2_bet_rating += 1
 
+    p1_wins = player1.win_count()
+    p2_wins = player2.win_count()
+
     p1_ratio = player1.win_loss_ratio()
     p2_ratio = player2.win_loss_ratio()
 
@@ -64,6 +68,12 @@ def predict_winner(session, player1, player2):
 
     if p2_ratio == 'undefeated':
         p2_ratio = 9999999999
+
+    if p1_wins < 5:
+        messages['warnings'].append('{} has less than 5 wins'.format(player1.name))
+
+    if p2_wins < 5:
+        messages['warnings'].append('{} has less than 5 wins'.format(player2.name))
 
     if len(player1.matches) > 3 and len(player2.matches) > 3:
         if p1_ratio > (p2_ratio + 0.5):
