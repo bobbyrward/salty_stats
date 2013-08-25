@@ -69,6 +69,9 @@ def predict_winner(session, player1, player2):
     if p2_ratio == 'undefeated':
         p2_ratio = 9999999999
 
+    if player1.rating < 1450 and player2.rating < 1450:
+        messages['warnings'].append('{} and {} are both below 1450 rating'.format(player1.name, player2.name))
+
     if p1_wins < 5:
         messages['warnings'].append('{} has less than 5 wins'.format(player1.name))
 
