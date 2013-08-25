@@ -9,6 +9,7 @@ from salty_stats.app import Application
 #TODO: Try screen capture to determine characters? Probably not
 #TODO: Export stats to sqlite and keep in git
 #TODO: Add personal stats tracking of bets
+#TODO: Add betting directly into the app
 
 #Improvements/Bugs
 #TODO: Make the crawl wizard less horrible
@@ -17,6 +18,9 @@ from salty_stats.app import Application
 #TODO: File menu stays highlighted after crawler wizard opens
 #TODO: Fix the tab order
 #TODO: Select all text on edit box mouse focus
+#TODO: Stop dumping bad html
+#TODO: Show errors when crawling
+#TODO: Show summary of crawl results
 
 #TODO: Fix this
 # Traceback (most recent call last):
@@ -30,6 +34,8 @@ from salty_stats.app import Application
 #TODO: Have they beaten anyone around that rating before?
 #TODO: Try reducing initial rating?
 #TODO: Take undefeated into account
+#TODO: Don't show <5 wins warning if they have a lot of losses (how many?)
+#TODO: Find a way to take match duration into account for wins
 
 
 def main():
