@@ -3,7 +3,6 @@ import datetime
 import re
 import urlparse
 
-from salty_stats.db import Session
 from salty_stats.db import Match
 
 
@@ -14,7 +13,7 @@ BET_EXTRACT_RE = re.compile(r' - \$(\d+)\D*')
 
 
 def parse_tourney_stats(html_tree):
-    rows = html_tree.xpath('//table[@class="leaderboard"]/tbody/tr')
+    rows = html_tree.xpath('//table[contains(@class, "leaderboard")]/tbody/tr')
 
     if len(rows) == 0:
         raise ValueError("Invalid tourney stats file")
@@ -59,8 +58,11 @@ def parse_tourney_stats(html_tree):
         yield data
 
 
-def load_tourney_stats(html_tree):
-    session = Session()
+def load_tourney_stats(session, html_tree):
+    stats = {
+        'matches': 0,
+        'characters': 0,
+    }
 
     try:
         for match in parse_tourney_stats(html_tree):
@@ -73,6 +75,8 @@ def load_tourney_stats(html_tree):
             if not created:
                 break
 
+            stats['matches'] += 1
+
         session.commit()
 
     except Exception:
@@ -80,7 +84,7 @@ def load_tourney_stats(html_tree):
         session.rollback()
         raise
 
-    return not created
+    return not created, stats
 
 
 if __name__ == '__main__':

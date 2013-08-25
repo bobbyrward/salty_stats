@@ -4,7 +4,7 @@ import logging
 from salty_stats.app import Application
 
 
-#TODO: Add dialog to crawl stats url
+#TODO: Make the crawl wizard less horrible
 
 
 def main():

@@ -19,7 +19,6 @@ def find_next_page(parsed_html):
     found = parsed_html.xpath('//div[@id="pagination"]/div[@class="right"]/a/@href')
 
     if len(found):
-        print 'next_page =', found[0]
         return ''.join(('http://www.saltybet.com', found[0]))
     else:
         return None
@@ -65,7 +64,6 @@ def crawl_stats_page(url):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    #logging.basicConfig(level=logging.INFO)
 
     import sys
     crawl_stats_page(sys.argv[1])
