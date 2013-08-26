@@ -36,16 +36,16 @@ class RequestProcessor(QtCore.QThread):
         app = QtGui.QApplication.instance()
 
         self.log.debug('Signing in w/ ("{}":"{}")'.format(
-            str(app.settings.value('salty_email')),
-            str(app.settings.value('salty_password')),
+            str(app.settings.value('auth_user')),
+            str(app.settings.value('auth_password')),
         ))
 
         self.push_request({
             'method': 'POST',
             'url': 'http://www.saltybet.com/authenticate?signin=1',
             'data': {
-                'email': str(app.settings.value('salty_email')),
-                'pword': str(app.settings.value('salty_password')),
+                'email': str(app.settings.value('auth_user')),
+                'pword': str(app.settings.value('auth_password')),
                 'authenticate': 'signin',
             },
         }, self.check_signin)

@@ -5,6 +5,7 @@ from PySide import QtGui
 
 from salty_stats.matchup_view import MatchupView
 from salty_stats.crawler_dialog import CrawlerWizard
+from salty_stats.settings import SettingsDialog
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -65,13 +66,26 @@ class MainWindow(QtGui.QMainWindow):
             statusTip='Crawl a tourney stats page',
             triggered=self.on_crawl,
         )
+        self.actions['preferences'] = QtGui.QAction(
+            '&Preferences',
+            self,
+            statusTip='Preferences',
+            shortcut=QtGui.QKeySequence.Preferences,
+            triggered=self.on_preferences,
+        )
 
     def create_menus(self):
         file_menu = self.menuBar().addMenu('&File')
         file_menu.addAction(self.actions['crawl'])
+        file_menu.addSeparator()
+        file_menu.addAction(self.actions['preferences'])
         file_menu.addSeparator()
         file_menu.addAction(self.actions['quit'])
 
     def on_crawl(self):
         crawler = CrawlerWizard()
         crawler.exec_()
+
+    def on_preferences(self):
+        dlg = SettingsDialog(self)
+        dlg.exec_()

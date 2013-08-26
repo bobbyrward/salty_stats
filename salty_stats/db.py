@@ -1,6 +1,8 @@
 import os
 import logging
 
+from PySide import QtCore
+
 from sqlalchemy import Column
 from sqlalchemy import Boolean
 from sqlalchemy import Integer
@@ -28,8 +30,8 @@ log = logging.getLogger(__name__)
 
 
 def create_session_class():
-    db_filename = os.path.join(os.path.dirname(__file__), 'salty.db')
-    engine = create_engine('sqlite:///{}'.format(db_filename))
+    settings = QtCore.QSettings("saltybetstats", "saltybetstats")
+    engine = create_engine(settings.value('db_url'))
     session_factory = sessionmaker(bind=engine)
     return scoped_session(session_factory)
 

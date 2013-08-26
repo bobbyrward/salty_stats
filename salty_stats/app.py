@@ -105,7 +105,8 @@ class Application(QtGui.QApplication):
         self.stats_crawler.quit()
 
     def on_rp_started(self, request_processor):
-        request_processor.do_login_check()
+        if self.settings.value('startup_auth_check'):
+            request_processor.do_login_check()
 
     def on_rp_auth_success(self, rp):
         #self.log.debug('Auth Success, now crawling')
