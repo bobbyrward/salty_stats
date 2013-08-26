@@ -125,28 +125,30 @@ class Prediction(object):
         if stat(p1, 'undefeated') and stat(p2, 'undefeated'):
             self.add_warning('xandyundefeated', x=p1.name, y=p2.name)
 
-        elif stat(p1, 'undefeated'):
-            self.add_warning('xundefeated', x=p1.name)
+        elif stat(p1, 'undefeated') and stat(p1, 'win_count') > LOWER_WIN_THRESHOLD_WARNING:
+            self.favor_player(p1, 'xundefeated', x=p1.name)
 
-        elif stat(p2, 'undefeated'):
-            self.add_warning('xundefeated', x=p2.name)
+        elif stat(p2, 'undefeated') and stat(p1, 'win_count') > LOWER_WIN_THRESHOLD_WARNING:
+            self.favor_player(p2, 'xundefeated', x=p2.name)
 
         # if either player is not undefeated but has less than 5 wins or losses, add a warning
         if not stat(p1, 'undefeated') and stat(p1, 'loss_count') < LOWER_LOSS_THRESHOLD_WARNING:
-            self.add_warning('xlt5losses', x=p1.name)
+            if stat(p1, 'win_count') > LOWER_WIN_THRESHOLD_WARNING:
+                self.favor_player(p1, 'xlt5losses', x=p1.name)
+            else:
+                self.add_warning('xlt5losses', x=p1.name)
 
         if not stat(p2, 'undefeated') and stat(p2, 'loss_count') < LOWER_LOSS_THRESHOLD_WARNING:
-            self.add_warning('xlt5losses', x=p2.name)
+            if stat(p2, 'win_count') > LOWER_WIN_THRESHOLD_WARNING:
+                self.favor_player(p2, 'xlt5losses', x=p2.name)
+            else:
+                self.add_warning('xlt5losses', x=p2.name)
 
         if stat(p1, 'win_count') < LOWER_WIN_THRESHOLD_WARNING:
             self.add_warning('xlt5wins', x=p1.name)
 
         if stat(p2, 'win_count') < LOWER_WIN_THRESHOLD_WARNING:
             self.add_warning('xlt5wins', x=p2.name)
-
-        # add a warning when both are at or below initial rating level
-        if stat(p1, 'rating') <= 1450 and stat(p2, 'rating') <= 1450:
-            self.add_warning('xandyinitialrating', x=p1.name, y=p2.name)
 
         if stat(p1, 'total_matches') <= 3:
             self.add_warning('xlt3matches', x=p1.name)
