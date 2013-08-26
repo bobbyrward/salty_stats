@@ -68,9 +68,13 @@ def predict_winner(session, player1, player2):
 
     if p1_ratio == 'undefeated':
         messages['warnings'].append('{} is undefeated'.format(player1.name))
+    elif p1_losses < 5:
+        messages['warnings'].append('{} has less than 5 losses'.format(player1.name))
 
     if p2_ratio == 'undefeated':
         messages['warnings'].append('{} is undefeated'.format(player2.name))
+    elif p2_losses < 5:
+        messages['warnings'].append('{} has less than 5 losses'.format(player2.name))
 
     if player1.rating < 1450 and player2.rating < 1450:
         messages['warnings'].append('{} and {} are both below 1450 rating'.format(player1.name, player2.name))
@@ -80,12 +84,6 @@ def predict_winner(session, player1, player2):
 
     if p2_wins < 5:
         messages['warnings'].append('{} has less than 5 wins'.format(player2.name))
-
-    if p1_losses < 5:
-        messages['warnings'].append('{} has less than 5 losses'.format(player1.name))
-
-    if p2_losses < 5:
-        messages['warnings'].append('{} has less than 5 losses'.format(player2.name))
 
     if len(player1.matches) > 3 and len(player2.matches) > 3:
         if p1_ratio > (p2_ratio + 0.5):
