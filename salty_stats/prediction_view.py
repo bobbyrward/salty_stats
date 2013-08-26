@@ -33,6 +33,7 @@ class PredictionView(QtGui.QTextEdit):
 
         lines = []
         lines.append('Estimate: {}'.format(prediction.bet))
+        lines.append('Confidence: {}'.format(prediction.confidence))
 
         if prediction.messages['warnings']:
             lines.append('')
