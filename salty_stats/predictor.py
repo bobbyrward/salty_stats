@@ -184,11 +184,11 @@ class Prediction(object):
 
         for p1_beat in stat(p1, 'defeated'):
             if p1_beat in stat(p2, 'defeatedby'):
-                self.favor_player(self.player1, 'xbeatylost', x=p1.name, y=p2.name, z=p1_beat)
+                self.favor_player(self.player1, 'xbeatylost', x=p1.name, y=p2.name, z=p1_beat.name)
 
         for p1_lost in stat(p1, 'defeatedby'):
             if p1_lost in stat(p2, 'defeated'):
-                self.favor_player(self.player2, 'xbeatylost', x=p2.name, y=p1.name, z=p1_lost)
+                self.favor_player(self.player2, 'xbeatylost', x=p2.name, y=p1.name, z=p1_lost.name)
 
     def add_warning(self, message, **message_kwargs):
         """Add a warning that the prediction may be unreliable
