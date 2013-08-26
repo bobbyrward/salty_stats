@@ -1,5 +1,3 @@
-import logging
-
 from PySide import QtGui
 
 
@@ -7,10 +5,12 @@ class PredictionBetView(QtGui.QWidget):
     def __init__(self, parent):
         super(PredictionBetView, self).__init__(parent)
         self.bet_on = QtGui.QLabel('')
+        self.bet_rating = QtGui.QLabel('')
         self.confidence = QtGui.QLabel('')
 
         layout = QtGui.QHBoxLayout()
         layout.addWidget(self.create_group_box('Bet On', self.bet_on))
+        layout.addWidget(self.create_group_box('Bet Rating', self.bet_rating))
         layout.addWidget(self.create_group_box('Confidence', self.confidence))
         self.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
@@ -30,6 +30,7 @@ class PredictionBetView(QtGui.QWidget):
 
     def on_prediction_changed(self, prediction, player1, player2):
         self.bet_on.setText(prediction.bet)
+        self.bet_rating.setText('{} vs {}'.format(prediction.bet_rating[player1], prediction.bet_rating[player2]))
         self.confidence.setText(str(prediction.confidence))
 
 
