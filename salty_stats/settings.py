@@ -37,7 +37,7 @@ class SettingsDialog(QtGui.QDialog):
                     'type': str,
                 },
                 {
-                    'label': 'State check interval in seconds (0 to disable)',
+                    'label': 'State check interval in seconds (blank to disable)',
                     'name': 'state_check_interval',
                     'type': int,
                 },
@@ -122,16 +122,21 @@ class SettingsDialog(QtGui.QDialog):
         name = values['name']
         value_type = values['type']
 
+        def update_setting(new_value):
+            old_value = app.settings.value(name)
+            app.settings.setValue(name, new_value)
+            app.setting_changed.emit(name, new_value, old_value)
+
         # str, bool, int, list
 
         if value_type == str:
             widget = QtGui.QLineEdit()
             widget.setText(app.settings.value(name))
 
-            def valueChanged(new_value):
-                app.settings.setValue(name, str(new_value))
+            def valueChanged():
+                update_setting(str(widget.text()))
 
-            widget.textEdited.connect(valueChanged)
+            widget.editingFinished.connect(valueChanged)
             return QtGui.QLabel(title), widget
 
         elif value_type == bool:
@@ -145,7 +150,7 @@ class SettingsDialog(QtGui.QDialog):
             def stateChanged(new_state):
                 new_value = (new_state == QtCore.Qt.Checked)
                 new_value = 1 if new_value else 0
-                app.settings.setValue(name, str(new_value))
+                update_setting(str(new_value))
 
             widget.stateChanged.connect(stateChanged)
             return None, widget
@@ -156,7 +161,7 @@ class SettingsDialog(QtGui.QDialog):
             widget.setValidator(QtGui.QIntValidator(0, 1500, self))
 
             def valueChanged(new_value):
-                app.settings.setValue(name, str(new_value))
+                update_setting(str(new_value))
 
             widget.textEdited.connect(valueChanged)
             return QtGui.QLabel(title), widget
@@ -168,7 +173,7 @@ class SettingsDialog(QtGui.QDialog):
 
             @QtCore.Slot(unicode)
             def currentIndexChanged(new_value):
-                app.settings.setValue(name, str(new_value))
+                update_setting(str(new_value))
 
             widget.currentIndexChanged.connect(currentIndexChanged)
             return QtGui.QLabel(title), widget

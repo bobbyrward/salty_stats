@@ -73,14 +73,25 @@ class MainWindow(QtGui.QMainWindow):
             shortcut=QtGui.QKeySequence.Preferences,
             triggered=self.on_preferences,
         )
+        self.actions['authenticate'] = QtGui.QAction(
+            '&Authenticate',
+            self,
+            statusTip='Authenticate w/ saltybet.com',
+            triggered=self.on_authenticate,
+        )
 
     def create_menus(self):
         file_menu = self.menuBar().addMenu('&File')
+        file_menu.addAction(self.actions['authenticate'])
         file_menu.addAction(self.actions['crawl'])
         file_menu.addSeparator()
         file_menu.addAction(self.actions['preferences'])
         file_menu.addSeparator()
         file_menu.addAction(self.actions['quit'])
+
+    def on_authenticate(self):
+        app = QtGui.QApplication.instance()
+        app.request_processor.do_login_check()
 
     def on_crawl(self):
         crawler = CrawlerWizard()

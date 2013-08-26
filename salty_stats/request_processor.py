@@ -20,11 +20,13 @@ class RequestProcessor(QtCore.QThread):
         self.quit_flag = False
         self.cookies = cookies
         self.request_session = None
+        self.userid = None
+        self.balance = None
 
     def do_login_check(self):
         self.push_request({
             'method': 'GET',
-            'url': 'http://www.saltybet.com/stats',
+            'url': 'http://www.saltybet.com',
         }, self.auth_check)
 
     def push_request(self, request_kwargs, signal=None, context=None):
@@ -51,44 +53,55 @@ class RequestProcessor(QtCore.QThread):
         }, self.check_signin)
 
     def on_check_signin(self, response, context):
+        self.log.debug('on_check_signin')
         parsed = html.fromstring(response.content)
 
-        footer = parsed.xpath('//div[@id="footer"]')
+        userid = parsed.xpath('//input[@id="u"]')
 
-        if not len(footer):
+        if not len(userid):
             self.log.debug('Sign in failed')
             return
 
-        footer = footer[0]
+        userid = userid[0].get('value')
 
-        class_ = footer.get('class')
-
-        if not class_ or 'goldfooter' not in class_:
-            self.log.debug('Sign in failed')
+        if not userid:
+            self.log.debug('on_auth_check: userid blank, logging in')
             return
+
+        self.userid = userid
+
+        balance = parsed.xpath('//input[@id="b"]')
+        self.balance = balance[0].get('value')
 
         # logged in already
-        self.log.debug('Sign in succeeded')
+        self.log.debug('Sign in succeeded, userid = {}'.format(self.userid))
         self.authentication_succeeded.emit(self)
 
     def on_auth_check(self, response, context):
+        self.log.debug('on_auth_check')
         parsed = html.fromstring(response.content)
 
-        footer = parsed.xpath('//div[@id="footer"]')
+        userid = parsed.xpath('//input[@id="u"]')
 
-        if not len(footer):
+        if not len(userid):
+            self.log.debug('on_auth_check: not logged in, logging in')
             self.do_signin_request()
             return
 
-        footer = footer[0]
+        userid = userid[0].get('value')
 
-        class_ = footer.get('class')
-
-        if not class_ or 'goldfooter' not in class_:
+        if not userid:
+            self.log.debug('on_auth_check: userid blank, logging in')
             self.do_signin_request()
             return
+
+        self.userid = userid
+
+        balance = parsed.xpath('//input[@id="b"]')
+        self.balance = balance[0].get('value')
 
         # logged in already
+        self.log.debug('on_auth_check: already logged in, userid = {}'.format(self.userid))
         self.authentication_succeeded.emit(self)
 
     def run(self):
@@ -108,10 +121,7 @@ class RequestProcessor(QtCore.QThread):
         self.exec_()
 
     def on_request_pushed(self, request_kwargs, signal, context):
-        self.log.debug('RequestProcessor: got work item {} [thread {}]'.format(request_kwargs['url'], self.thread()))
-
         try:
-            self.log.debug('RequestProcessor: sending request w/ cookies {} [thread {}]'.format(self.cookies, self.thread()))
             response = self.request_session.request(cookies=self.cookies, **request_kwargs)
         except Exception:
             response = None

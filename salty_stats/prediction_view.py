@@ -59,8 +59,3 @@ class PredictionMessageView(QtGui.QGroupBox):
 
         messages_text = '\n'.join(prediction.messages[name_translate[self.name]])
         self.messages.setText(messages_text)
-
-        #if messages_text == '':
-        #    self.hide()
-        #else:
-        #    self.show()
