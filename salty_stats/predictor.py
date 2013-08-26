@@ -91,9 +91,6 @@ class Prediction(object):
         else:
             self.bet = 'Try betting upset'
 
-        """
-        """
-
     def compare_players(self):
         p1 = self.player1
         p2 = self.player2
