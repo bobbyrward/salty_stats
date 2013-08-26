@@ -84,9 +84,9 @@ class Prediction(object):
         p2 = self.player2
 
         if abs(self.bet_rating[p1] - self.bet_rating[p2]) > 1 and self.confidence >= 1:
-            if self.bet_rating[p1] - self.bet_rating[p2]:
+            if self.bet_rating[p1] > self.bet_rating[p2]:
                 self.bet = 'Bet on {}'.format(p1.name)
-            elif self.bet_rating[p2] - self.bet_rating[p1]:
+            elif self.bet_rating[p2] > self.bet_rating[p1]:
                 self.bet = 'Bet on {}'.format(p2.name)
         else:
             self.bet = 'Try betting upset'
