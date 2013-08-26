@@ -19,11 +19,11 @@ class Prediction(object):
             'template': '{x} is undefeated',
             'severity': 'major',
         },
-        'xlt5losses': {
+        'xltlosses': {
             'template': '{x} has less than 5 losses',
             'severity': 'major',
         },
-        'xlt5wins': {
+        'xltwins': {
             'template': '{x} has less than 5 wins',
             'severity': 'major',
         },
@@ -31,20 +31,20 @@ class Prediction(object):
             'template': '{x} and {y} are at or below initial rating',
             'severity': 'major',
         },
-        'xlt3matches': {
-            'template': '{x} has less than or equal to 3 matches total',
+        'xltmatches': {
+            'template': '{x} has less than or equal to 10 matches total',
             'severity': 'major',
         },
         'xhigherratio': {
-            'template': '{x} has a higher win/loss ratio than {y}',
+            'template': '{x} has a higher win/loss ratio',
             'severity': 'minor',
         },
         'xhigherrating': {
-            'template': '{x} has a higher rating than {y}',
+            'template': '{x} has a higher rating',
             'severity': 'major',
         },
         'similarrating': {
-            'template': '{x} and {y} have a similar rating',
+            'template': 'Both have a similar rating',
             'severity': 'major',
         },
     }
@@ -85,11 +85,11 @@ class Prediction(object):
 
         if abs(self.bet_rating[p1] - self.bet_rating[p2]) > 1 and self.confidence >= 1:
             if self.bet_rating[p1] > self.bet_rating[p2]:
-                self.bet = 'Bet on {}'.format(p1.name)
+                self.bet = p1.name
             elif self.bet_rating[p2] > self.bet_rating[p1]:
-                self.bet = 'Bet on {}'.format(p2.name)
+                self.bet = p2.name
         else:
-            self.bet = 'Try betting upset'
+            self.bet = '???'
 
     def compare_players(self):
         p1 = self.player1
@@ -102,17 +102,17 @@ class Prediction(object):
             if stat(p1, 'total_matches') > 3 and stat(p2, 'total_matches') > 3:
 
                 if stat(p1, 'win_ratio') > (stat(p2, 'win_ratio') + 0.5):
-                    self.favor_player(p1, 'xhigherratio', x=p1.name, y=p2.name)
+                    self.favor_player(p1, 'xhigherratio', x=p1.name)
 
                 elif stat(p2, 'win_ratio') > (stat(p1, 'win_ratio') + 0.5):
-                    self.favor_player(p2, 'xhigherratio', x=p2.name, y=p1.name)
+                    self.favor_player(p2, 'xhigherratio', x=p2.name)
 
         if stat(p1, 'rating') > (stat(p2, 'rating') + 50):
-            self.favor_player(p1, 'xhigherrating', x=p1.name, y=p2.name)
+            self.favor_player(p1, 'xhigherrating', x=p1.name)
         elif stat(p2, 'rating') > (stat(p1, 'rating') + 50):
-            self.favor_player(p2, 'xhigherrating', x=p2.name, y=p1.name)
+            self.favor_player(p2, 'xhigherrating', x=p2.name)
         else:
-            self.add_warning('similarrating', x=p1.name, y=p2.name)
+            self.add_warning('similarrating', x=p1.name)
 
     def compile_warnings(self):
         p1 = self.player1
@@ -121,40 +121,36 @@ class Prediction(object):
         def stat(player, stat_name):
             return self.stats[stat_name][player]
 
+        #TODO: A lot of the warnings are redundant
+
         # If either/both players are undefeated add a major warning since this prediction is unstable
         if stat(p1, 'undefeated') and stat(p2, 'undefeated'):
             self.add_warning('xandyundefeated', x=p1.name, y=p2.name)
 
-        elif stat(p1, 'undefeated') and stat(p1, 'win_count') > LOWER_WIN_THRESHOLD_WARNING:
+        elif stat(p1, 'undefeated') and stat(p1, 'win_count') >= LOWER_WIN_THRESHOLD_WARNING:
             self.favor_player(p1, 'xundefeated', x=p1.name)
 
-        elif stat(p2, 'undefeated') and stat(p1, 'win_count') > LOWER_WIN_THRESHOLD_WARNING:
+        elif stat(p2, 'undefeated') and stat(p1, 'win_count') >= LOWER_WIN_THRESHOLD_WARNING:
             self.favor_player(p2, 'xundefeated', x=p2.name)
 
         # if either player is not undefeated but has less than 5 wins or losses, add a warning
         if not stat(p1, 'undefeated') and stat(p1, 'loss_count') < LOWER_LOSS_THRESHOLD_WARNING:
             if stat(p1, 'win_count') > LOWER_WIN_THRESHOLD_WARNING:
-                self.favor_player(p1, 'xlt5losses', x=p1.name)
+                self.favor_player(p1, 'xltlosses', x=p1.name)
             else:
-                self.add_warning('xlt5losses', x=p1.name)
+                self.add_warning('xltlosses', x=p1.name)
 
         if not stat(p2, 'undefeated') and stat(p2, 'loss_count') < LOWER_LOSS_THRESHOLD_WARNING:
             if stat(p2, 'win_count') > LOWER_WIN_THRESHOLD_WARNING:
-                self.favor_player(p2, 'xlt5losses', x=p2.name)
+                self.favor_player(p2, 'xltlosses', x=p2.name)
             else:
-                self.add_warning('xlt5losses', x=p2.name)
+                self.add_warning('xltlosses', x=p2.name)
 
-        if stat(p1, 'win_count') < LOWER_WIN_THRESHOLD_WARNING:
-            self.add_warning('xlt5wins', x=p1.name)
+        if stat(p1, 'total_matches') <= 10:
+            self.add_warning('xltmatches', x=p1.name)
 
-        if stat(p2, 'win_count') < LOWER_WIN_THRESHOLD_WARNING:
-            self.add_warning('xlt5wins', x=p2.name)
-
-        if stat(p1, 'total_matches') <= 3:
-            self.add_warning('xlt3matches', x=p1.name)
-
-        if stat(p2, 'total_matches') <= 3:
-            self.add_warning('xlt3matches', x=p2.name)
+        if stat(p2, 'total_matches') <= 10:
+            self.add_warning('xltmatches', x=p2.name)
 
     def compile_stats(self):
         stats = {
