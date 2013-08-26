@@ -35,6 +35,13 @@ class BettingDialog(QtGui.QDialog):
         self.player_button_group.addButton(self.player_1_button)
         self.player_button_group.addButton(self.player_2_button)
 
+        prediction = app.prediction.bet
+
+        if prediction == app.player1.name:
+            self.player_1_button.setChecked(True)
+        else:
+            self.player_2_button.setChecked(True)
+
         top_layout = QtGui.QGridLayout()
         top_layout.addWidget(QtGui.QLabel('Bet Amount'), 0, 0, 1, 1, 0)
         top_layout.addWidget(self.bet_amount, 0, 1, 1, 1, 0)
