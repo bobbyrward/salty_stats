@@ -60,6 +60,9 @@ def predict_winner(session, player1, player2):
     p1_wins = player1.win_count()
     p2_wins = player2.win_count()
 
+    p1_losses = player1.loss_count()
+    p2_losses = player2.loss_count()
+
     p1_ratio = player1.win_loss_ratio()
     p2_ratio = player2.win_loss_ratio()
 
@@ -77,6 +80,12 @@ def predict_winner(session, player1, player2):
 
     if p2_wins < 5:
         messages['warnings'].append('{} has less than 5 wins'.format(player2.name))
+
+    if p1_losses < 5:
+        messages['warnings'].append('{} has less than 5 losses'.format(player1.name))
+
+    if p2_losses < 5:
+        messages['warnings'].append('{} has less than 5 losses'.format(player2.name))
 
     if len(player1.matches) > 3 and len(player2.matches) > 3:
         if p1_ratio > (p2_ratio + 0.5):
