@@ -1,11 +1,12 @@
 import logging
 
-from PySide import QtCore  # noqa
-from PySide import QtGui  # noqa
+from PySide import QtGui
 
-from salty_stats.character_view import CharacterView
+from salty_stats.character_view import CharacterStatsView
+from salty_stats.match_history import MatchHistoryTableView
 from salty_stats.character_selector import CharacterSelector
-from salty_stats.prediction_view import PredictionView
+from salty_stats.prediction_view import PredictionBetView
+from salty_stats.prediction_view import PredictionMessageView
 
 
 class MatchupView(QtGui.QWidget):
@@ -13,32 +14,50 @@ class MatchupView(QtGui.QWidget):
 
     def __init__(self, parent):
         super(MatchupView, self).__init__(parent)
+        p1_changed = QtGui.QApplication.instance().player_1_changed
+        p2_changed = QtGui.QApplication.instance().player_2_changed
 
-        self.player_1_selector = CharacterSelector(self, QtGui.QApplication.instance().player_1_changed)
-        self.player_1_view = CharacterView(self, QtGui.QApplication.instance().player_1_changed)
+        p1_selector = CharacterSelector(self, p1_changed)
+        p1_selector.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
 
-        self.player_2_selector = CharacterSelector(self, QtGui.QApplication.instance().player_2_changed)
-        self.player_2_view = CharacterView(self, QtGui.QApplication.instance().player_2_changed)
+        p1_stats = CharacterStatsView(self, p1_changed)
+        #p1_history = MatchHistoryTableView(self, p1_changed)
 
-        self.prediction_view = PredictionView(self)
+        p2_selector = CharacterSelector(self, p2_changed)
+        p2_selector.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
+        p2_stats = CharacterStatsView(self, p2_changed)
+        #p2_history = MatchHistoryTableView(self, p2_changed)
 
-        p1_layout = QtGui.QVBoxLayout()
-        p1_layout.addWidget(self.player_1_selector)
-        p1_layout.addWidget(self.player_1_view)
-        p1_layout.setContentsMargins(0, 0, 0, 0)
+        bet_prediction = PredictionBetView(self)
+        warnings = PredictionMessageView(self, 'warnings', 'Warnings')
+        favor_p1 = PredictionMessageView(self, 'favorp1', 'Favor P1')
+        favor_p2 = PredictionMessageView(self, 'favorp2', 'Favor P2')
 
-        p2_layout = QtGui.QVBoxLayout()
-        p2_layout.addWidget(self.player_2_selector)
-        p2_layout.addWidget(self.player_2_view)
-        p2_layout.setContentsMargins(0, 0, 0, 0)
+        layout = QtGui.QGridLayout()
+        layout.setColumnStretch(0, 0)
+        layout.setColumnStretch(1, 1)
+        layout.setColumnStretch(2, 0)
+        layout.setColumnStretch(3, 1)
 
-        both_players = QtGui.QHBoxLayout()
-        both_players.addLayout(p1_layout)
-        both_players.addLayout(p2_layout)
-        both_players.setContentsMargins(0, 0, 0, 0)
+        layout.setRowStretch(0, 0)
+        layout.setRowStretch(1, 0)
+        layout.setRowStretch(2, 0)
+        layout.setRowStretch(3, 0)
 
-        layout = QtGui.QVBoxLayout()
-        layout.addLayout(both_players)
-        layout.addWidget(self.prediction_view)
+        align = 0
+
+        layout.addWidget(p1_selector, 0, 0, 1, 2, align)
+        layout.addWidget(p1_stats, 1, 0, 1, 2, align)
+        #layout.addWidget(p1_history, 2, 0, 1, 2, align)
+
+        layout.addWidget(p2_selector, 0, 2, 1, 2, align)
+        layout.addWidget(p2_stats, 1, 2, 1, 2, align)
+        #layout.addWidget(p2_history, 2, 2, 1, 2, align)
+
+        layout.addWidget(bet_prediction, 2, 0, 1, 2, align)
+        layout.addWidget(warnings, 2, 2, 1, 2, align)
+
+        layout.addWidget(favor_p1, 3, 0, 1, 2, align)
+        layout.addWidget(favor_p2, 3, 2, 1, 2, align)
 
         self.setLayout(layout)

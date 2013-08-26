@@ -3,6 +3,8 @@ import logging
 from PySide import QtCore
 from PySide import QtGui
 
+from salty_stats.match_history_model import MatchHistoryTabelModel
+
 
 class MatchHistoryItemDelegate(QtGui.QStyledItemDelegate):
     log = logging.getLogger(__name__)
@@ -29,12 +31,17 @@ class MatchHistoryItemDelegate(QtGui.QStyledItemDelegate):
 class MatchHistoryTableView(QtGui.QTableView):
     log = logging.getLogger(__name__)
 
-    def __init__(self, parent, model):
+    def __init__(self, parent, signal):
         super(MatchHistoryTableView, self).__init__(parent)
         self.horizontalHeader().setResizeMode(QtGui.QHeaderView.ResizeToContents)
         self.horizontalHeader().setStretchLastSection(True)
         self.setTabKeyNavigation(False)
-        self.setModel(model)
+        self.setModel(MatchHistoryTabelModel(self, None))
         self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.setItemDelegate(MatchHistoryItemDelegate(self))
         self.setFocusPolicy(QtCore.Qt.NoFocus)
+
+        signal.connect(self.on_character_changed)
+
+    def on_character_changed(self, character):
+        self.setModel(MatchHistoryTabelModel(self, character))

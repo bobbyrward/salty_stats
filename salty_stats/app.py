@@ -12,6 +12,7 @@ from salty_stats.character_model import CharacterListModel
 from salty_stats.main_window import MainWindow
 from salty_stats.request_processor import RequestProcessor
 from salty_stats.stats_crawler import StatsCrawler
+from salty_stats.predictor import predict_winner
 
 
 class Application(QtGui.QApplication):
@@ -43,6 +44,7 @@ class Application(QtGui.QApplication):
 
     player_1_changed = QtCore.Signal(object)
     player_2_changed = QtCore.Signal(object)
+    prediction_changed = QtCore.Signal(object, object, object)
     log = logging.getLogger(__name__)
 
     def __init__(self):
@@ -53,6 +55,8 @@ class Application(QtGui.QApplication):
 
         self.player1 = None
         self.player2 = None
+        self.player_1_changed.connect(self.on_player_1_changed)
+        self.player_2_changed.connect(self.on_player_2_changed)
 
         self.Session = db.create_session_class()
         self.session = self.Session()
@@ -78,9 +82,19 @@ class Application(QtGui.QApplication):
 
     def on_player_1_changed(self, character):
         self.player1 = character
+        self.make_prediction()
 
     def on_player_2_changed(self, character):
         self.player2 = character
+        self.make_prediction()
+
+    def make_prediction(self):
+        if self.player1 is None or self.player2 is None:
+            self.prediction = None
+        else:
+            self.log.debug('making prediction: {} vs {}'.format(self.player1.name, self.player2.name))
+            self.prediction = predict_winner(self.session, self.player1, self.player2)
+            self.prediction_changed.emit(self.prediction, self.player1, self.player2)
 
     def on_exit(self):
         cookies = dict(self.request_processor.cookies)

@@ -2,57 +2,64 @@ import logging
 
 from PySide import QtGui
 
-from salty_stats.predictor import predict_winner
 
-
-class PredictionView(QtGui.QTextEdit):
-    log = logging.getLogger(__name__)
-
+class PredictionBetView(QtGui.QWidget):
     def __init__(self, parent):
-        super(PredictionView, self).__init__(parent)
-        self.setReadOnly(True)
+        super(PredictionBetView, self).__init__(parent)
+        self.bet_on = QtGui.QLabel('')
+        self.confidence = QtGui.QLabel('')
 
-        self.player1 = None
-        self.player2 = None
+        layout = QtGui.QHBoxLayout()
+        layout.addWidget(self.create_group_box('Bet On', self.bet_on))
+        layout.addWidget(self.create_group_box('Confidence', self.confidence))
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(layout)
 
-        QtGui.QApplication.instance().player_1_changed.connect(self.on_player1_changed)
-        QtGui.QApplication.instance().player_2_changed.connect(self.on_player2_changed)
+        app = QtGui.QApplication.instance()
+        app.prediction_changed.connect(self.on_prediction_changed)
 
-        self.refresh_data()
+    def create_group_box(self, name, widget):
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(widget)
+        layout.setContentsMargins(0, 0, 0, 0)
 
-    def refresh_data(self):
-        if self.player1 is None or self.player2 is None:
-            self.setPlainText('')
-            return
+        group = QtGui.QGroupBox(name, self)
+        group.setLayout(layout)
 
-        prediction = predict_winner(
-            QtGui.QApplication.instance().session,
-            self.player1,
-            self.player2,
-        )
+        return group
 
-        lines = []
-        lines.append('Estimate: {}'.format(prediction.bet))
-        lines.append('Confidence: {}'.format(prediction.confidence))
+    def on_prediction_changed(self, prediction, player1, player2):
+        self.bet_on.setText(prediction.bet)
+        self.confidence.setText(str(prediction.confidence))
 
-        if prediction.messages['warnings']:
-            lines.append('')
-            lines.append('WARNINGS')
-            lines.extend(''.join(('\t', x)) for x in prediction.messages['warnings'])
 
-        lines.append('')
-        lines.append('Favoring Player 1:')
-        lines.extend(''.join(('\t', x)) for x in prediction.messages[self.player1])
-        lines.append('')
-        lines.append('Favoring Player 2:')
-        lines.extend(''.join(('\t', x)) for x in prediction.messages[self.player2])
+class PredictionMessageView(QtGui.QGroupBox):
+    def __init__(self, parent, name, label):
+        super(PredictionMessageView, self).__init__(label, parent)
+        self.name = name
+        self.messages = QtGui.QLabel()
+        self.messages.setWordWrap(True)
 
-        self.setPlainText('\n'.join(lines))
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(self.messages)
+        layout.setContentsMargins(0, 0, 0, 0)
 
-    def on_player1_changed(self, player1):
-        self.player1 = player1
-        self.refresh_data()
+        self.setLayout(layout)
 
-    def on_player2_changed(self, player2):
-        self.player2 = player2
-        self.refresh_data()
+        app = QtGui.QApplication.instance()
+        app.prediction_changed.connect(self.on_prediction_changed)
+
+    def on_prediction_changed(self, prediction, player1, player2):
+        name_translate = {
+            'favorp1': player1,
+            'favorp2': player2,
+            'warnings': 'warnings',
+        }
+
+        messages_text = '\n'.join(prediction.messages[name_translate[self.name]])
+        self.messages.setText(messages_text)
+
+        #if messages_text == '':
+        #    self.hide()
+        #else:
+        #    self.show()
