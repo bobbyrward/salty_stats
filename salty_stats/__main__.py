@@ -14,6 +14,9 @@ from salty_stats.app import Application
 #   File "salty_stats/crawler_dialog.py", line 51, in on_crawl_complete
 #     self.parent.next()
 # AttributeError: 'builtin_function_or_method' object has no attribute 'next'
+# Bets just stop working...
+# Background requests freeze the app.  GIL not getting released?
+# Get the websocket state update notification working
 
 #Predictions
 #TODO: Don't show <5 wins warning if they have a lot of losses (how many?)
