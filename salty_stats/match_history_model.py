@@ -42,9 +42,9 @@ class MatchHistoryTabelModel(QtCore.QAbstractTableModel):
             # opponents win ratio
             elif column == 1:
                 try:
-                    found = str(round(opponent.win_loss_ratio(), 2))
+                    found = str(round(opponent.win_loss_ratio, 2))
                 except TypeError:
-                    found = opponent.win_loss_ratio()
+                    found = opponent.win_loss_ratio
             # opponents rating
             elif column == 2:
                 found = str(opponent.rating)

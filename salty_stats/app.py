@@ -1,4 +1,3 @@
-import os
 import sys
 import json
 import logging  # noqa
@@ -7,10 +6,8 @@ import logging.handlers
 
 from PySide import QtCore
 from PySide import QtGui
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session
-from sqlalchemy.orm import sessionmaker
 
+from salty_stats import db
 from salty_stats.character_model import CharacterListModel
 from salty_stats.main_window import MainWindow
 from salty_stats.request_processor import RequestProcessor
@@ -57,13 +54,7 @@ class Application(QtGui.QApplication):
         self.player1 = None
         self.player2 = None
 
-        db_filename = os.path.join(os.path.dirname(__file__), 'salty.db')
-
-        engine = create_engine('sqlite:///{}'.format(db_filename))
-
-        session_factory = sessionmaker(bind=engine)
-
-        self.Session = scoped_session(session_factory)
+        self.Session = db.create_session_class()
         self.session = self.Session()
 
         cookies = self.settings.value('cookies')

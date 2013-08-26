@@ -73,11 +73,11 @@ class CharacterView(QtGui.QWidget):
         history_model = MatchHistoryTabelModel(self, character)
         self.name.setText(character.name)
         self.history.setModel(history_model)
-        self.wins.setText(str(character.win_count()))
-        self.losses.setText(str(character.loss_count()))
+        self.wins.setText(str(character.win_count))
+        self.losses.setText(str(character.loss_count))
         self.rating.setText(str(character.rating))
 
         try:
-            self.ratio.setText(str(round(character.win_loss_ratio(), 2)))
+            self.ratio.setText(str(round(character.win_loss_ratio, 2)))
         except TypeError:
-            self.ratio.setText(character.win_loss_ratio())
+            self.ratio.setText(character.win_loss_ratio)

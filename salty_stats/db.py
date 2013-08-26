@@ -1,3 +1,4 @@
+import os
 import logging
 
 from sqlalchemy import Column
@@ -7,6 +8,9 @@ from sqlalchemy import String
 from sqlalchemy import ForeignKey
 from sqlalchemy import Float
 from sqlalchemy import and_
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import backref
@@ -21,6 +25,13 @@ Base = declarative_base()
 
 
 log = logging.getLogger(__name__)
+
+
+def create_session_class():
+    db_filename = os.path.join(os.path.dirname(__file__), 'salty.db')
+    engine = create_engine('sqlite:///{}'.format(db_filename))
+    session_factory = sessionmaker(bind=engine)
+    return scoped_session(session_factory)
 
 
 class Character(Base):
@@ -81,21 +92,34 @@ class Character(Base):
 
         return query.all()
 
+    @property
     def wins_list(self):
         return [x for x in self.match_players if x.won]
 
+    @property
     def win_count(self):
-        return len(self.wins_list())
+        return len(self.wins_list)
 
-    def losses(self):
+    @property
+    def losses_list(self):
         return [x for x in self.match_players if not x.won]
 
+    @property
     def loss_count(self):
-        return len(self.losses())
+        return len(self.losses_list)
 
+    @property
+    def undefeated(self):
+        return self.loss_count == 0
+
+    @property
+    def total_matches(self):
+        return len(self.matches)
+
+    @property
     def win_loss_ratio(self):
-        win_count = self.win_count()
-        loss_count = self.loss_count()
+        win_count = self.win_count
+        loss_count = self.loss_count
 
         if loss_count == 0:
             return 'undefeated'

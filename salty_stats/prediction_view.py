@@ -27,38 +27,26 @@ class PredictionView(QtGui.QTextEdit):
             self.setPlainText('')
             return
 
-        messages, p1rating, p2rating = predict_winner(
+        prediction = predict_winner(
             QtGui.QApplication.instance().session,
             self.player1,
             self.player2,
         )
 
         lines = []
+        lines.append('Estimate: {}'.format(prediction.bet))
 
-        estimate = None
-
-        if abs(p1rating - p2rating) > 1:
-            if p1rating > p2rating:
-                estimate = self.player1
-            elif p2rating > p1rating:
-                estimate = self.player2
-
-        if estimate is not None:
-            lines.append("Estimate: Bet {}".format('????' if estimate is None else estimate.name))
-        else:
-            lines.append("Estimate: Try betting upset")
-
-        if messages['warnings']:
+        if prediction.messages['warnings']:
             lines.append('')
             lines.append('WARNINGS')
-            lines.extend(''.join(('\t', x)) for x in messages['warnings'])
+            lines.extend(''.join(('\t', x)) for x in prediction.messages['warnings'])
 
         lines.append('')
         lines.append('Favoring Player 1:')
-        lines.extend(''.join(('\t', x)) for x in messages['favorp1'])
+        lines.extend(''.join(('\t', x)) for x in prediction.messages[self.player1])
         lines.append('')
         lines.append('Favoring Player 2:')
-        lines.extend(''.join(('\t', x)) for x in messages['favorp2'])
+        lines.extend(''.join(('\t', x)) for x in prediction.messages[self.player2])
 
         self.setPlainText('\n'.join(lines))
 
