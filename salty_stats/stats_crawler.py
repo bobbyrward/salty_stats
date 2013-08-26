@@ -56,8 +56,8 @@ class StatsCrawler(QtCore.QThread):
         try:
             found_existing = load_tourney_stats(session, parsed_html)
         except ValueError as e:
-            with open('dump.html', 'w') as fd:
-                fd.write(response.content)
+            #with open('dump.html', 'w') as fd:
+            #    fd.write(response.content)
             self.log.debug('ValueError while loading tourney stats: {}'.format(e))
             return
 
