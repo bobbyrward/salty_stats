@@ -27,7 +27,7 @@ class Character(Base):
     __tablename__ = 'character'
 
     character_id = Column(Integer, primary_key=True)
-    name = Column(String(100), nullable=False)
+    name = Column(String(100), nullable=False, unique=True)
     rating = Column(Float, nullable=False)
 
     matches = association_proxy('match_players', 'match')
