@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import logging  # noqa
@@ -56,9 +57,9 @@ class Application(QtGui.QApplication):
         self.player1 = None
         self.player2 = None
 
-        db_url = str(self.settings.value('db_url'))
+        db_filename = os.path.join(os.path.dirname(__file__), 'salty.db')
 
-        engine = create_engine(db_url)
+        engine = create_engine('sqlite:///{}'.format(db_filename))
 
         session_factory = sessionmaker(bind=engine)
 
