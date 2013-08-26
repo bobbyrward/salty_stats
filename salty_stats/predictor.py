@@ -203,9 +203,6 @@ class Prediction(object):
 
 
 def predict_winner(session, player1, player2):
-    """Very naive and cautious match predictor
-    """
-
     prediction = Prediction(session, player1, player2)
     prediction.predict()
     return prediction
