@@ -4,6 +4,10 @@ LOWER_LOSS_THRESHOLD_WARNING = 5
 LOWER_WIN_THRESHOLD_WARNING = 5
 INITIAL_RATING_LEVEL = 1450
 
+RATING_DIFF_TIER_3 = 200
+RATING_DIFF_TIER_2 = 100
+RATING_DIFF_TIER_1 = 50
+
 
 class Prediction(object):
     message_dict = {
@@ -39,9 +43,17 @@ class Prediction(object):
             'template': '{x} has a higher win/loss ratio',
             'severity': 'minor',
         },
-        'xhigherrating': {
+        'xhigherrating3': {
+            'template': '{x} has a much higher rating',
+            'severity': 'critical',
+        },
+        'xhigherrating2': {
             'template': '{x} has a higher rating',
             'severity': 'major',
+        },
+        'xhigherrating1': {
+            'template': '{x} has a slightly higher rating',
+            'severity': 'minor',
         },
         'similarrating': {
             'template': 'Both have a similar rating',
@@ -52,6 +64,7 @@ class Prediction(object):
     favor_category_rating = {
         'minor': 1,
         'major': 3,
+        'critical': 5,
     }
 
     def __init__(self, session, player1, player2):
@@ -107,12 +120,23 @@ class Prediction(object):
                 elif stat(p2, 'win_ratio') > (stat(p1, 'win_ratio') + 0.5):
                     self.favor_player(p2, 'xhigherratio', x=p2.name)
 
-        if stat(p1, 'rating') > (stat(p2, 'rating') + 50):
-            self.favor_player(p1, 'xhigherrating', x=p1.name)
-        elif stat(p2, 'rating') > (stat(p1, 'rating') + 50):
-            self.favor_player(p2, 'xhigherrating', x=p2.name)
-        else:
-            self.add_warning('similarrating', x=p1.name)
+        if abs(stat(p1, 'rating') - stat(p2, 'rating')) >= RATING_DIFF_TIER_3:
+            if stat(p1, 'rating') > stat(p2, 'rating'):
+                self.favor_player(p1, 'xhigherrating3', x=p1.name)
+            else:
+                self.favor_player(p2, 'xhigherrating3', x=p2.name)
+
+        elif abs(stat(p1, 'rating') - stat(p2, 'rating')) > RATING_DIFF_TIER_2:
+            if stat(p1, 'rating') > stat(p2, 'rating'):
+                self.favor_player(p1, 'xhigherrating2', x=p1.name)
+            else:
+                self.favor_player(p2, 'xhigherrating2', x=p2.name)
+
+        elif abs(stat(p1, 'rating') - stat(p2, 'rating')) > RATING_DIFF_TIER_1:
+            if stat(p1, 'rating') > stat(p2, 'rating'):
+                self.favor_player(p1, 'xhigherrating1', x=p1.name)
+            else:
+                self.favor_player(p2, 'xhigherrating1', x=p2.name)
 
     def compile_warnings(self):
         p1 = self.player1
