@@ -23,6 +23,7 @@ class BettingDialog(QtGui.QDialog):
         self.bet_amount = QtGui.QLineEdit()
         balance = int(100 if app.balance is None else app.balance)
         self.bet_amount.setValidator(QtGui.QIntValidator(1, balance, self))
+        self.bet_amount.setText(str(balance))
 
         buttons = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
         buttons.accepted.connect(self.on_accepted)
