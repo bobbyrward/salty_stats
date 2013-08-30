@@ -96,6 +96,8 @@ class Prediction(object):
         p1 = self.player1
         p2 = self.player2
 
+        self.confidence = abs(self.bet_rating[p1] - self.bet_rating[p2]) - len(self.messages['warnings'])
+
         if abs(self.bet_rating[p1] - self.bet_rating[p2]) > 1 and self.confidence >= 1:
             if self.bet_rating[p1] > self.bet_rating[p2]:
                 self.bet = p1.name
@@ -120,6 +122,7 @@ class Prediction(object):
                 elif stat(p2, 'win_ratio') > (stat(p1, 'win_ratio') + 0.5):
                     self.favor_player(p2, 'xhigherratio', x=p2.name)
 
+        #TODO: These tier checks should have varying affect on confidence
         if abs(stat(p1, 'rating') - stat(p2, 'rating')) >= RATING_DIFF_TIER_3:
             if stat(p1, 'rating') > stat(p2, 'rating'):
                 self.favor_player(p1, 'xhigherrating3', x=p1.name)
