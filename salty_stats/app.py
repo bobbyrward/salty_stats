@@ -92,7 +92,6 @@ class Application(QtGui.QApplication):
 
         self.main_window = MainWindow()
 
-        self.state_request_finished.connect(self.on_state_request_finished)
         self.start_state_timer()
 
     def start_state_timer(self):
@@ -125,14 +124,14 @@ class Application(QtGui.QApplication):
             },
         }
 
-        self.request_processor.push_request(request, self.state_request_finished, None)
+        self.request_processor.push_request(request, self._state_request_finished, None)
 
-    def on_state_request_finished(self, response, context):
+    def _state_request_finished(self, response, context):
         import time
         self.log.debug('on_state_request_finished: {}'.format(time.time()))
 
         try:
-            parsed = json.loads(response.content)
+            parsed = json.loads(str(response.readAll()))
         except Exception:
             return
 
